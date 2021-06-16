@@ -37,7 +37,7 @@ public class JPAConfig {
 		//TODO: configure data source bean
 		DriverManagerDataSource ds = new DriverManagerDataSource();
 		ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
-		ds.setUrl("jdbc:mysql://localhost:3306/order_db?useUnicode=true&tmp;useJDBCCompliantTimeZoneShift=true");
+		ds.setUrl("jdbc:mysql://localhost:3306/order_db?useUnicode=true&useJDBCCompliantTimeZoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
 		ds.setUsername("root");
 		ds.setPassword("Kunj@3498");
 		return ds;
