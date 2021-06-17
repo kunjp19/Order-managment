@@ -3,8 +3,10 @@ package com.egen.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "item")
 public class Item {
     @Id
     private String item_id;
@@ -68,5 +70,14 @@ public class Item {
         this.order_id = order_id;
     }
 
-
+    @Override
+    public String toString() {
+        return "Item{" +
+                "item_id='" + item_id + '\'' +
+                ", item_name='" + item_name + '\'' +
+                ", item_qty=" + item_qty +
+                ", item_unit_price=" + item_unit_price +
+                ", order_id=" + order_id +
+                '}';
+    }
 }

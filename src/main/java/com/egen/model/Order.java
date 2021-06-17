@@ -1,35 +1,80 @@
 package com.egen.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.sql.Timestamp;
 import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
+@Table(name = "orders")
+@NamedQueries({
+        @NamedQuery(name="Order.getAllOrders",
+                query = "SELECT ord FROM Order ord ORDER BY ord.id ")
+        @NamedQuery(name="Order.getOrderById",
+                query = "SELECT ord from Order ord WHERE ord.id=:paramOrderId  ")
+})
 public class Order {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private String id;
-    private String order_customer_id;
+
+    @Column(name = "orderStatus")
     private String order_status;
+
+    @Column(name = "orderShippingCharges")
     private Double order_shipping_charges;
-    private String order_payment_method;
+
+    @Column(name = "orderSubtotal")
     private Double order_subtotal;
+
+    @Column(name = "orderTax")
     private Double order_tax;
+
+    @Column(name = "orderTotal")
     private Double order_total;
-    private ZonedDateTime createdDate;
-    private ZonedDateTime modifiedDate;
 
-    public String getOrder_payment_method() {
-        return order_payment_method;
+    @Column(name = "orderCreatedDate")
+    private Timestamp createdDate;
+
+    @Column(name = "orderModifiedDate")
+    private Timestamp modifiedDate;
+
+    @OneToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "shipping_id")
+    private Address shippingAddress;
+
+    @OneToMany(mappedBy = "orders",targetEntity = Item.class,cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private Set<Item> items = new HashSet<Item>();
+
+    @OneToMany(mappedBy = "orders",targetEntity = Payment.class,cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private Set<Payment> paymentDetails = new HashSet<Payment>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id")
+    public Customer customer;
+
+    public Order() {
+
     }
 
-    public void setOrder_payment_method(String order_payment_method) {
-        this.order_payment_method = order_payment_method;
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id='" + id + '\'' +
+                ", order_status='" + order_status + '\'' +
+                ", order_shipping_charges=" + order_shipping_charges +
+                ", order_subtotal=" + order_subtotal +
+                ", order_tax=" + order_tax +
+                ", order_total=" + order_total +
+                ", createdDate=" + createdDate +
+                ", modifiedDate=" + modifiedDate +
+                '}';
     }
 
-    public Order(String id, String order_customer_id, String order_status, Double order_shipping_charges, Double order_subtotal, Double order_tax, Double order_total, ZonedDateTime createdDate, ZonedDateTime modifiedDate) {
-        this.id = id;
-        this.order_customer_id = order_customer_id;
+    public Order(String id, String order_status, Double order_shipping_charges, String order_payment_method, Double order_subtotal, Double order_tax, Double order_total, ZonedDateTime createdDate, ZonedDateTime modifiedDate) {
+        this.id = UUID.randomUUID().toString();
         this.order_status = order_status;
         this.order_shipping_charges = order_shipping_charges;
         this.order_subtotal = order_subtotal;
@@ -39,28 +84,9 @@ public class Order {
         this.modifiedDate = modifiedDate;
     }
 
-    public Order() {
-    }
+    public Order(Address shippingAddress) {
 
-    public ZonedDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(ZonedDateTime createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public ZonedDateTime getModifiedDate() {
-        return modifiedDate;
-    }
-
-    public void setModifiedDate(ZonedDateTime modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
-
-    public Order(String id){
-        this.id = UUID.randomUUID()
-                .toString();
+        this.shippingAddress = shippingAddress;
     }
 
     public String getId() {
@@ -69,14 +95,6 @@ public class Order {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getOrder_customer_id() {
-        return order_customer_id;
-    }
-
-    public void setOrder_customer_id(String order_customer_id) {
-        this.order_customer_id = order_customer_id;
     }
 
     public String getOrder_status() {
@@ -94,6 +112,7 @@ public class Order {
     public void setOrder_shipping_charges(Double order_shipping_charges) {
         this.order_shipping_charges = order_shipping_charges;
     }
+
 
     public Double getOrder_subtotal() {
         return order_subtotal;
@@ -119,4 +138,19 @@ public class Order {
         this.order_total = order_total;
     }
 
+    public ZonedDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(ZonedDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public ZonedDateTime getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(ZonedDateTime modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
 }

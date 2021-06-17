@@ -3,6 +3,7 @@ package com.egen;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -16,6 +17,7 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
+@PropertySource(value="classpath:/resources/application.properties")
 public class JPAConfig {
 
 	@Bean
@@ -37,20 +39,22 @@ public class JPAConfig {
 		//TODO: configure data source bean
 		DriverManagerDataSource ds = new DriverManagerDataSource();
 		ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
-		ds.setUrl("jdbc:mysql://localhost:3306/order_db?useUnicode=true&useJDBCCompliantTimeZoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
-		ds.setUsername("root");
-		ds.setPassword("Kunj@3498");
+		ds.setUrl("db.url");
+		ds.setUsername("db.user");
+		ds.setPassword("db.password");
 		return ds;
 	}
 
-//	@Bean
+	@Bean
 	public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
 		//TODO: configure transaction manager
 		JpaTransactionManager jtm = new JpaTransactionManager((emf));
 		return jtm;
 	}
 
-	private Properties jpaProperties() {
+
+	@Bean
+	Properties jpaProperties() {
 		//TODO: configure jpa properties
 		Properties properties = new Properties();
 		properties.put("hibernate.dialect", "org.hibernate.dialect.MySQL57Dialect");

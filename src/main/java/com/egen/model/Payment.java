@@ -4,8 +4,10 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import java.time.ZonedDateTime;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="payment")
 public class Payment {
     @Id
     private String payment_id;
@@ -13,7 +15,9 @@ public class Payment {
     private Double order_payment_amount;
     private String order_payment_method;
     private ZonedDateTime order_payment_date;
-    private String payment_method_type;
+
+    @ManyToOne
+    private Order order_id;
 
     public Order getOrder_id() {
         return order_id;
@@ -22,9 +26,6 @@ public class Payment {
     public void setOrder_id(Order order_id) {
         this.order_id = order_id;
     }
-
-    @ManyToOne
-    private Order order_id;
 
     public String getPayment_id() {
         return payment_id;
@@ -66,12 +67,15 @@ public class Payment {
         this.order_payment_date = order_payment_date;
     }
 
-    public String getPayment_method_type() {
-        return payment_method_type;
+    @Override
+    public String toString() {
+        return "Payment{" +
+                "payment_id='" + payment_id + '\'' +
+                ", payment_confirmation_number=" + payment_confirmation_number +
+                ", order_payment_amount=" + order_payment_amount +
+                ", order_payment_method='" + order_payment_method + '\'' +
+                ", order_payment_date=" + order_payment_date +
+                ", order_id=" + order_id +
+                '}';
     }
-
-    public void setPayment_method_type(String payment_method_type) {
-        this.payment_method_type = payment_method_type;
-    }
-
 }
