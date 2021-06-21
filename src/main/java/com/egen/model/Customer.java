@@ -1,54 +1,36 @@
 package com.egen.model;
 
-import javax.persistence.*;
-import java.util.List;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
-@Table(name = "customer", indexes = {
-        @Index(columnList = "customer_id", name = "customer_id_index")
-})
-@NamedQueries({
-        @NamedQuery(name="Customer.findAll",
-                query = "SELECT cust FROM Customer cust ORDER BY cust.id ")
-})
+@Table(name = "customer")
 public class Customer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "customer_id")
-    private long id;
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    private String id;
 
-    @Column(name = "customer_firstname")
+    @Column(name = "firstname")
     private String firstName;
-
-    @Column(name = "customer_lastname")
+    @Column(name = "lastname")
     private String lastName;
 
-    @Column(name ="customer_email" ,unique = true)
-    private String email;
-
-    @Column(name = "customer_number")
-    private String phoneNumber;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "customer")
-    public List<Order> orders;
-
-    public Customer() {
+    public Customer(){
     }
 
-    public Customer(String firstName, String lastName, String email, String phoneNumber, List<Order> orders) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.orders = orders;
-    }
-
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -66,29 +48,5 @@ public class Customer {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
     }
 }

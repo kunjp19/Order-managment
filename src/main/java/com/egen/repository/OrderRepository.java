@@ -1,25 +1,25 @@
 package com.egen.repository;
 
 import com.egen.model.Order;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
-import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 
+@Repository
+public interface OrderRepository<zip> extends CrudRepository<Order, String> {
 
-public interface OrderRepository {
+    @Query("SELECT ord FROM Order ord JOIN Address add ON ord.shippingAddress.id=add.id" +
+            " WHERE " +
+            "add.zip=:paramZip " +
+            "ORDER BY " +
+            "ord.totalAmount DESC")
+    List<Order> findByzip(String zip);
 
-    List<Order> getAllOrders();
-
-    Order getOrderById(String id);
-
+    @Query("SELECT ord FROM Order ord " +
+            "WHERE ord.createdDate BETWEEN :startTime AND :endTime")
     List<Order> getAllOrdersWithInInterval(Timestamp startTime, Timestamp endTime);
-
-    List<Order> top10OrdersWithHighestDollarAmountInZip(String zipcode);
-
-    String cancleOrder(String id);
-
-    Order updateOrder(String id, Order order);
-
-    Order placeOrder(Order order);
 }

@@ -1,92 +1,98 @@
 package com.egen.model;
 
-import javax.persistence.*;
+import com.egen.enums.OrderStatus;
+import com.egen.enums.ShipmentMethods;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.sql.Timestamp;
-import java.time.ZonedDateTime;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Table(name = "orders")
-@NamedQueries({
-        @NamedQuery(name="Order.getAllOrders",
-                query = "SELECT ord FROM Order ord ORDER BY ord.id ")
-        @NamedQuery(name="Order.getOrderById",
-                query = "SELECT ord from Order ord WHERE ord.id=:paramOrderId  ")
-})
 public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
     private String id;
 
-    @Column(name = "orderStatus")
-    private String order_status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
 
-    @Column(name = "orderShippingCharges")
-    private Double order_shipping_charges;
+    @Column(name = "sub_total")
+    private double subtotal;
 
-    @Column(name = "orderSubtotal")
-    private Double order_subtotal;
+    @Column(name = "total_amount")
+    private double totalAmount;
 
-    @Column(name = "orderTax")
-    private Double order_tax;
+    @Column(name = "tax")
+    private double tax;
 
-    @Column(name = "orderTotal")
-    private Double order_total;
+    @Column(name = "is_billing_address_same")
+    private boolean isBillingAddressSame = false;
 
-    @Column(name = "orderCreatedDate")
+    @Column(name = "created_date")
     private Timestamp createdDate;
 
-    @Column(name = "orderModifiedDate")
-    private Timestamp modifiedDate;
-
     @OneToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "shipping_id")
     private Address shippingAddress;
 
-    @OneToMany(mappedBy = "orders",targetEntity = Item.class,cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    private Set<Item> items = new HashSet<Item>();
+    @Enumerated(EnumType.STRING)
+    @Column(name="delivery_type")
+    private ShipmentMethods deliveryType;
 
-    @OneToMany(mappedBy = "orders",targetEntity = Payment.class,cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    private Set<Payment> paymentDetails = new HashSet<Payment>();
+    @OneToMany(cascade = {CascadeType.ALL})
+    private Set<Item> items;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
-    public Customer customer;
+    @OneToMany(cascade = {CascadeType.ALL})
+    private Set<Payment> paymentDetails;
+
+    @OneToOne(cascade = {CascadeType.ALL},orphanRemoval = true)
+    private Customer customer;
 
     public Order() {
+    }
 
+    public Order(String id, OrderStatus orderStatus, double subtotal, double totalAmount, double tax, Address shippingAddress, boolean isBillingAddressSame, ShipmentMethods deliveryType, Set<Item> items, Set<Payment> paymentDetails, Customer customer, Timestamp createdDate) {
+        this.id = id;
+        this.orderStatus = orderStatus;
+        this.subtotal = subtotal;
+        this.totalAmount = totalAmount;
+        this.tax = tax;
+        this.shippingAddress = shippingAddress;
+        this.isBillingAddressSame = isBillingAddressSame;
+        this.deliveryType = deliveryType;
+        this.items = items;
+        this.paymentDetails = paymentDetails;
+        this.customer = customer;
+        this.createdDate = createdDate;
     }
 
     @Override
     public String toString() {
         return "Order{" +
                 "id='" + id + '\'' +
-                ", order_status='" + order_status + '\'' +
-                ", order_shipping_charges=" + order_shipping_charges +
-                ", order_subtotal=" + order_subtotal +
-                ", order_tax=" + order_tax +
-                ", order_total=" + order_total +
+                ", orderStatus=" + orderStatus +
+                ", subtotal=" + subtotal +
+                ", totalAmount=" + totalAmount +
+                ", tax=" + tax +
+                ", shippingAddress=" + shippingAddress +
+                ", isBillingAddressSame=" + isBillingAddressSame +
+                ", deliveryType=" + deliveryType +
+                ", items=" + items +
+                ", paymentDetails=" + paymentDetails +
+                ", customer=" + customer +
                 ", createdDate=" + createdDate +
-                ", modifiedDate=" + modifiedDate +
                 '}';
-    }
-
-    public Order(String id, String order_status, Double order_shipping_charges, String order_payment_method, Double order_subtotal, Double order_tax, Double order_total, ZonedDateTime createdDate, ZonedDateTime modifiedDate) {
-        this.id = UUID.randomUUID().toString();
-        this.order_status = order_status;
-        this.order_shipping_charges = order_shipping_charges;
-        this.order_subtotal = order_subtotal;
-        this.order_tax = order_tax;
-        this.order_total = order_total;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-    }
-
-    public Order(Address shippingAddress) {
-
-        this.shippingAddress = shippingAddress;
     }
 
     public String getId() {
@@ -97,60 +103,91 @@ public class Order {
         this.id = id;
     }
 
-    public String getOrder_status() {
-        return order_status;
+    public OrderStatus getOrderStatus() {
+        return orderStatus;
     }
 
-    public void setOrder_status(String order_status) {
-        this.order_status = order_status;
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
     }
 
-    public Double getOrder_shipping_charges() {
-        return order_shipping_charges;
+    public double getSubtotal() {
+        return subtotal;
     }
 
-    public void setOrder_shipping_charges(Double order_shipping_charges) {
-        this.order_shipping_charges = order_shipping_charges;
+    public void setSubtotal(double subtotal) {
+        this.subtotal = subtotal;
     }
 
-
-    public Double getOrder_subtotal() {
-        return order_subtotal;
+    public double getTotalAmount() {
+        return totalAmount;
     }
 
-    public void setOrder_subtotal(Double order_subtotal) {
-        this.order_subtotal = order_subtotal;
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
-    public Double getOrder_tax() {
-        return order_tax;
+    public double getTax() {
+        return tax;
     }
 
-    public void setOrder_tax(Double order_tax) {
-        this.order_tax = order_tax;
+    public void setTax(double tax) {
+        this.tax = tax;
     }
 
-    public Double getOrder_total() {
-        return order_total;
+    public Address getShippingAddress() {
+        return shippingAddress;
     }
 
-    public void setOrder_total(Double order_total) {
-        this.order_total = order_total;
+    public void setShippingAddress(Address shippingAddress) {
+        this.shippingAddress = shippingAddress;
     }
 
-    public ZonedDateTime getCreatedDate() {
+    public boolean isBillingAddressSame() {
+        return isBillingAddressSame;
+    }
+
+    public void setBillingAddressSame(boolean billingAddressSame) {
+        isBillingAddressSame = billingAddressSame;
+    }
+
+    public ShipmentMethods getDeliveryType() {
+        return deliveryType;
+    }
+
+    public void setDeliveryType(ShipmentMethods deliveryType) {
+        this.deliveryType = deliveryType;
+    }
+
+    public Set<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(Set<Item> items) {
+        this.items = items;
+    }
+
+    public Set<Payment> getPaymentDetails() {
+        return paymentDetails;
+    }
+
+    public void setPaymentDetails(Set<Payment> paymentDetails) {
+        this.paymentDetails = paymentDetails;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public Timestamp getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(ZonedDateTime createdDate) {
+    public void setCreatedDate(Timestamp createdDate) {
         this.createdDate = createdDate;
-    }
-
-    public ZonedDateTime getModifiedDate() {
-        return modifiedDate;
-    }
-
-    public void setModifiedDate(ZonedDateTime modifiedDate) {
-        this.modifiedDate = modifiedDate;
     }
 }

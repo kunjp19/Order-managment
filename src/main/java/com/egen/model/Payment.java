@@ -1,81 +1,70 @@
 package com.egen.model;
 
+import com.egen.enums.PaymentMethods;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.time.ZonedDateTime;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="payment")
+@Table(name = "payment")
 public class Payment {
+
     @Id
-    private String payment_id;
-    private Double payment_confirmation_number;
-    private Double order_payment_amount;
-    private String order_payment_method;
-    private ZonedDateTime order_payment_date;
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    private String id;
 
-    @ManyToOne
-    private Order order_id;
+    @Column(name = "paid_amount")
+    private double paidAmount;
 
-    public Order getOrder_id() {
-        return order_id;
+    @Column(name = "payment_mode")
+    private PaymentMethods paymentMode;
+
+    @OneToOne(cascade = {CascadeType.ALL})
+    private Address billingAddress;
+
+    public Payment() {
     }
 
-    public void setOrder_id(Order order_id) {
-        this.order_id = order_id;
+    public String getId() {
+        return id;
     }
 
-    public String getPayment_id() {
-        return payment_id;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setPayment_id(String payment_id) {
-        this.payment_id = payment_id;
+    public double getPaidAmount() {
+        return paidAmount;
     }
 
-    public Double getPayment_confirmation_number() {
-        return payment_confirmation_number;
+    public void setPaidAmount(double paidAmount) {
+        this.paidAmount = paidAmount;
     }
 
-    public void setPayment_confirmation_number(Double payment_confirmation_number) {
-        this.payment_confirmation_number = payment_confirmation_number;
+    public PaymentMethods getPaymentMode() {
+        return paymentMode;
     }
 
-    public Double getOrder_payment_amount() {
-        return order_payment_amount;
+    public void setPaymentMode(PaymentMethods paymentMode) {
+        this.paymentMode = paymentMode;
     }
 
-    public void setOrder_payment_amount(Double order_payment_amount) {
-        this.order_payment_amount = order_payment_amount;
+    public Address getBillingAddress() {
+        return billingAddress;
     }
 
-    public String getOrder_payment_method() {
-        return order_payment_method;
-    }
-
-    public void setOrder_payment_method(String order_payment_method) {
-        this.order_payment_method = order_payment_method;
-    }
-
-    public ZonedDateTime getOrder_payment_date() {
-        return order_payment_date;
-    }
-
-    public void setOrder_payment_date(ZonedDateTime order_payment_date) {
-        this.order_payment_date = order_payment_date;
-    }
-
-    @Override
-    public String toString() {
-        return "Payment{" +
-                "payment_id='" + payment_id + '\'' +
-                ", payment_confirmation_number=" + payment_confirmation_number +
-                ", order_payment_amount=" + order_payment_amount +
-                ", order_payment_method='" + order_payment_method + '\'' +
-                ", order_payment_date=" + order_payment_date +
-                ", order_id=" + order_id +
-                '}';
+    public void setBillingAddress(Address billingAddress) {
+        this.billingAddress = billingAddress;
     }
 }

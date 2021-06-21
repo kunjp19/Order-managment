@@ -3,67 +3,62 @@ package com.egen.controller;
 import com.egen.model.Order;
 import com.egen.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Timestamp;
-import java.time.ZonedDateTime;
+import javax.websocket.server.PathParam;
+import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8080")
-@RequestMapping(value = "/orders")
-
 public class OrderController {
 
-    private OrderService service;
 
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<Order> getAllOrders(){
-        //TODO
-        return service.getAllOrders();
+    private final OrderService orderService;
 
-//        System.out.println(orders);
-//        orders.add(new Order(order_status= "Placed",order_shipping_charges= 5.12,
-//                order_payment_method= "paypal", order_subtotal = 45.13,
-//                order_tax=6.17, order_total= 62.45, createdDate="24/06/2021 - 04:53",
-//                modifiedDate= "24/06/2021 - 04:53"));
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
     }
 
-    @RequestMapping(method = RequestMethod.GET,value = "/{id}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Order getOrderById(@PathVariable("id") String ordId){
-    //TODO
-        return service.getOrderById(ordId) ;
+    @GetMapping("order")
+    public ResponseEntity<List<Order>> getAllOrders(){
+        return ResponseEntity.ok(orderService.getAllOrders());
     }
 
-    @RequestMapping(method = RequestMethod.GET,value = "/interval",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<Order> getAllOrdersWithInInterval(@RequestParam(name = "startTime") Timestamp startTime,
-                                                  @RequestParam(name = "endTime") Timestamp endTime){
-        //TODO
-        return service.getAllOrdersWithInInterval(startTime,endTime);
+    @GetMapping("order/{id}")
+    public ResponseEntity<Order> getOrderById(@PathVariable("id") String orderId){
+        return ResponseEntity.ok(orderService.getOrderById(orderId));
     }
 
-    @RequestMapping(method = RequestMethod.GET,value = "zip/{zipcode}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<Order> top10OrdersWithHighestDollarAmountInZip( @PathVariable String zipcode){
-        //TODO
-        return service.top10OrdersWithHighestDollarAmountInZip(zipcode);
+    @GetMapping("interval/{startTime}/{endTime}")
+    public ResponseEntity<List<Order>> getAllOrdersWithInInterval(@PathVariable Timestamp startTime, @PathVariable Timestamp endTime){
+        return ResponseEntity.ok(orderService.getAllOrdersWithInInterval(startTime,endTime));
     }
 
-    @RequestMapping(method = RequestMethod.POST,value = "/placeorder",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Order placeOrder(@RequestBody Order order){
-        return service.placeOrder(order);
+    @GetMapping("orderwithzip/{zipcode}")
+    public ResponseEntity<List<Order>> top10OrdersWithHighestDollarAmountInZip(@PathVariable("zipcode") String zip){
+        return ResponseEntity.ok(orderService.top10OrdersWithHighestDollarAmountInZip(zip));
     }
 
-    @RequestMapping(method = RequestMethod.PUT,value = "/cancel/{id}",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String cancelOrder(@PathVariable("id") String ordId){
-        return service.cancleOrder(ordId);
+    @PostMapping("/place")
+    public ResponseEntity<Order> placeOrder(@RequestBody Order order){
+        return new ResponseEntity(orderService.placeOrder(order), HttpStatus.CREATED);
     }
 
-    @RequestMapping(method = RequestMethod.PUT,value = "/update/{id}",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Order updateOrder(@PathVariable("id") String ordId, @RequestBody Order order){
-        return service.updateOrder(ordId, order);
+    @PutMapping("/cancel/{id}")
+    public ResponseEntity<Order> cancelOrder(@PathVariable("id") String orderId){
+        return ResponseEntity.ok(orderService.cancelOrder(orderId));
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<Order> updateOrder(@RequestBody Order order){
+        return ResponseEntity.ok(orderService.updateOrder(order));
+    }
+
 }

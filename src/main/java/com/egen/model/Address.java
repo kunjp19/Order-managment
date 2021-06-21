@@ -1,30 +1,37 @@
 package com.egen.model;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "address")
 public class Address {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
     private String id;
 
-    @Column(name="shipping_id",unique = true)
-    private String shipping_id;
-
-    @Column(name="address_line_1",unique = true)
+    @Column(name = "addressLine1")
     private String addressLine1;
 
-    @Column(name="address_line_2",unique = true)
+    @Column(name = "addressLine2")
     private String addressLine2;
 
-    @Column(name="city")
+    @Column(name = "city")
     private String city;
 
-    @Column(name="state")
+    @Column(name = "state")
     private String state;
 
-    @Column(name = "zipcode")
-    private String zipCode;
+    @Column(name = "zip")
+    private String zip;
 
     public Address() {
     }
@@ -35,22 +42,6 @@ public class Address {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getAddressLine1() {
-        return addressLine1;
-    }
-
-    public void setAddressLine1(String addressLine1) {
-        this.addressLine1 = addressLine1;
-    }
-
-    public String getAddressLine2() {
-        return addressLine2;
-    }
-
-    public void setAddressLine2(String addressLine2) {
-        this.addressLine2 = addressLine2;
     }
 
     public String getCity() {
@@ -69,41 +60,27 @@ public class Address {
         this.state = state;
     }
 
-    public String getZipCode() {
-        return zipCode;
+    public String getZip() {
+        return zip;
     }
 
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
+    public void setZip(String zip) {
+        this.zip = zip;
     }
 
-    public String getShipping_id() {
-        return shipping_id;
+    public String getAddressLine1() {
+        return addressLine1;
     }
 
-    public void setShipping_id(String shipping_id) {
-        this.shipping_id = shipping_id;
-    }
-
-    public Address(String id, String shipping_id, String addressLine1, String addressLine2, String city, String state, String zipCode) {
-        this.id = id;
-        this.shipping_id= shipping_id;
+    public void setAddressLine1(String addressLine1) {
         this.addressLine1 = addressLine1;
-        this.addressLine2 = addressLine2;
-        this.city = city;
-        this.state = state;
-        this.zipCode = zipCode;
     }
 
-    @Override
-    public String toString() {
-        return "Address{" +
-                "id=" + id +
-                ", addressLine1='" + addressLine1 + '\'' +
-                ", addressLine2='" + addressLine2 + '\'' +
-                ", city='" + city + '\'' +
-                ", state='" + state + '\'' +
-                ", zipCode='" + zipCode + '\'' +
-                '}';
+    public String getAddressLine2() {
+        return addressLine2;
+    }
+
+    public void setAddressLine2(String addressLine2) {
+        this.addressLine2 = addressLine2;
     }
 }
